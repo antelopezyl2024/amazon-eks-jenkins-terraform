@@ -1,8 +1,8 @@
 pipeline {
     agent any
-       triggers {
+    triggers {
         pollSCM "* * * * *"
-       }
+    }
     stages {
         stage('Build Application') { 
             steps {
@@ -28,7 +28,7 @@ pipeline {
             steps {
                 echo '=== Building Petclinic Docker Image ==='
                 script {
-                    app = docker.build("ibuchh/petclinic-spinnaker-jenkins")
+                    app = docker.build("antelopezyl/petclinic-spinnaker-jenkins")
                 }
             }
         }
@@ -51,8 +51,11 @@ pipeline {
         stage('Remove local images') {
             steps {
                 echo '=== Delete the local docker images ==='
-                sh("docker rmi -f ibuchh/petclinic-spinnaker-jenkins:latest || :")
-                sh("docker rmi -f ibuchh/petclinic-spinnaker-jenkins:$SHORT_COMMIT || :")
+                script {
+                    sh "docker rmi -f antelopezyl/petclinic-spinnaker-jenkins:latest || :"
+                    // 注意：SHORT_COMMIT 变量在同一个 script 块或全局定义时才有效
+                    sh "docker rmi -f antelopezyl/petclinic-spinnaker-jenkins:${SHORT_COMMIT} || :"
+                }
             }
         }
     }
